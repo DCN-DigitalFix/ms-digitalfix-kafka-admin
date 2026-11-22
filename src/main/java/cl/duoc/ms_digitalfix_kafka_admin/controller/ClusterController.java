@@ -11,7 +11,7 @@ import cl.duoc.ms_digitalfix_kafka_admin.dto.ClusterResponse;
 import cl.duoc.ms_digitalfix_kafka_admin.service.KafkaAdminService;
 
 @RestController
-@RequestMapping("/api/kafka/cluster")
+@RequestMapping("/api/v1/kafka/cluster")
 public class ClusterController {
 
     private final KafkaAdminService service;

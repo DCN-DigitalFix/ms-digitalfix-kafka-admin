@@ -16,7 +16,7 @@ import cl.duoc.ms_digitalfix_kafka_admin.service.KafkaAdminService;
 
 /** Monitoreo de consumer groups: miembros, offsets y lag por particion. Solo lectura. */
 @RestController
-@RequestMapping("/api/kafka/consumer-groups")
+@RequestMapping("/api/v1/kafka/consumer-groups")
 public class ConsumerGroupController {
 
     private final KafkaAdminService service;

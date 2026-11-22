@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 /** Administracion de topicos: crear, listar, modificar configuracion, ampliar particiones, borrar. */
 @RestController
-@RequestMapping("/api/kafka/topics")
+@RequestMapping("/api/v1/kafka/topics")
 public class TopicController {
 
     private final KafkaAdminService service;

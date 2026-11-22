@@ -2,7 +2,7 @@ package cl.duoc.ms_digitalfix_kafka_admin.dto;
 
 import java.util.List;
 
-/** Detalle de GET /api/kafka/consumer-groups/{id}: miembros y offset por particion asignada. */
+/** Detalle de GET /api/v1/kafka/consumer-groups/{id}: miembros y offset por particion asignada. */
 public record ConsumerGroupResponse(
         String groupId,
         String estado,

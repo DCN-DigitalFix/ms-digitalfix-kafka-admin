@@ -45,7 +45,7 @@ digitalfix:
       - digitalfix.audit.events.DLT
 ```
 
-`DELETE /api/kafka/topics/{nombre}` responde 409 si el nombre está en esta
+`DELETE /api/v1/kafka/topics/{nombre}` responde 409 si el nombre está en esta
 lista, antes de llamar al broker. Evita borrar por error los tópicos que
 sostienen el resto del sistema; para los demás (tópicos de prueba creados
 desde esta misma API) sí se puede borrar.
@@ -56,15 +56,15 @@ desde esta misma API) sí se puede borrar.
 
 | Método | Ruta | Scope | Descripción |
 |---|---|---|---|
-| GET | `/api/kafka/topics` | `OT.Read` | Lista todos los tópicos con particiones, factor de replicación y configuración |
-| GET | `/api/kafka/topics/{nombre}` | `OT.Read` | Detalle de un tópico; 404 si no existe |
-| POST | `/api/kafka/topics` | `OT.Create` | Crea un tópico (`nombre`, `particiones`, `factorReplicacion`, `configuracion` opcional) |
-| PUT | `/api/kafka/topics/{nombre}/config` | `OT.Create` | Modifica configuración (`configuraciones`: mapa clave-valor, p. ej. `retention.ms`) |
-| PUT | `/api/kafka/topics/{nombre}/partitions` | `OT.Create` | Amplía particiones a un **total** (no un delta); 400 si el total no es mayor al actual |
-| DELETE | `/api/kafka/topics/{nombre}` | `OT.Create` | Borra el tópico; 409 si está protegido |
-| GET | `/api/kafka/consumer-groups` | `OT.Read` | Lista los consumer groups con su estado y cantidad de miembros |
-| GET | `/api/kafka/consumer-groups/{groupId}` | `OT.Read` | Detalle: miembros (con sus particiones asignadas) y offsets/lag por partición |
-| GET | `/api/kafka/cluster` | `OT.Read` | Brokers del clúster y cuál es el controlador |
+| GET | `/api/v1/kafka/topics` | `OT.Read` | Lista todos los tópicos con particiones, factor de replicación y configuración |
+| GET | `/api/v1/kafka/topics/{nombre}` | `OT.Read` | Detalle de un tópico; 404 si no existe |
+| POST | `/api/v1/kafka/topics` | `OT.Create` | Crea un tópico (`nombre`, `particiones`, `factorReplicacion`, `configuracion` opcional) |
+| PUT | `/api/v1/kafka/topics/{nombre}/config` | `OT.Create` | Modifica configuración (`configuraciones`: mapa clave-valor, p. ej. `retention.ms`) |
+| PUT | `/api/v1/kafka/topics/{nombre}/partitions` | `OT.Create` | Amplía particiones a un **total** (no un delta); 400 si el total no es mayor al actual |
+| DELETE | `/api/v1/kafka/topics/{nombre}` | `OT.Create` | Borra el tópico; 409 si está protegido |
+| GET | `/api/v1/kafka/consumer-groups` | `OT.Read` | Lista los consumer groups con su estado y cantidad de miembros |
+| GET | `/api/v1/kafka/consumer-groups/{groupId}` | `OT.Read` | Detalle: miembros (con sus particiones asignadas) y offsets/lag por partición |
+| GET | `/api/v1/kafka/cluster` | `OT.Read` | Brokers del clúster y cuál es el controlador |
 | GET | `/api/health` | público | — |
 
 Todas las rutas (salvo `/api/health`) también requieren rol `Admin`.
@@ -102,9 +102,9 @@ dto/
   ClusterResponse (con BrokerResponse)
 service/KafkaAdminService.java     toda la lógica contra el Admin client
 controller/
-  TopicController.java             /api/kafka/topics
-  ConsumerGroupController.java     /api/kafka/consumer-groups
-  ClusterController.java           /api/kafka/cluster
+  TopicController.java             /api/v1/kafka/topics
+  ConsumerGroupController.java     /api/v1/kafka/consumer-groups
+  ClusterController.java           /api/v1/kafka/cluster
   HealthController.java            /api/health (publico)
 exception/
   RecursoNoEncontradoException (404), OperacionInvalidaException (400)
@@ -146,26 +146,26 @@ Queda en el puerto **8087**. Requiere el clúster de Kafka levantado (ver
 
 Con un token con rol `Admin` y los scopes correspondientes:
 
-1. `GET /api/kafka/cluster` → devuelve los 3 brokers y cuál es el controlador.
-2. `GET /api/kafka/topics` → incluye `digitalfix.workorders.events`,
+1. `GET /api/v1/kafka/cluster` → devuelve los 3 brokers y cuál es el controlador.
+2. `GET /api/v1/kafka/topics` → incluye `digitalfix.workorders.events`,
    `digitalfix.audit.events` y sus `.DLT`, cada uno con 3 particiones y
    factor de replicación 3.
-3. `POST /api/kafka/topics` con un nombre nuevo (p. ej. `prueba.kafka-admin`)
+3. `POST /api/v1/kafka/topics` con un nombre nuevo (p. ej. `prueba.kafka-admin`)
    y `particiones: 2, factorReplicacion: 3` → 201 con el tópico creado.
-4. `PUT /api/kafka/topics/prueba.kafka-admin/partitions` con
+4. `PUT /api/v1/kafka/topics/prueba.kafka-admin/partitions` con
    `particiones: 4` → 200; una segunda llamada con `particiones: 3` (menor)
    → 400.
-5. `PUT /api/kafka/topics/prueba.kafka-admin/config` con
+5. `PUT /api/v1/kafka/topics/prueba.kafka-admin/config` con
    `configuraciones: {"retention.ms": "7200000"}` → 200; se refleja en el
    siguiente `GET` del tópico.
-6. `GET /api/kafka/consumer-groups` → lista `audit-timeline`,
+6. `GET /api/v1/kafka/consumer-groups` → lista `audit-timeline`,
    `report-metrics` y `report-audit-trail` (si `audit` y `report` están
    corriendo y procesaron al menos un mensaje), todos `Stable`.
-7. `GET /api/kafka/consumer-groups/audit-timeline` → miembros con sus
+7. `GET /api/v1/kafka/consumer-groups/audit-timeline` → miembros con sus
    particiones asignadas y, por partición, `offsetActual`, `offsetFinal` y
    `lag` (0 si el consumidor está al día).
-8. `DELETE /api/kafka/topics/prueba.kafka-admin` → 200.
-9. `DELETE /api/kafka/topics/digitalfix.workorders.events` → 409 (protegido).
+8. `DELETE /api/v1/kafka/topics/prueba.kafka-admin` → 200.
+9. `DELETE /api/v1/kafka/topics/digitalfix.workorders.events` → 409 (protegido).
 
 ---
 
