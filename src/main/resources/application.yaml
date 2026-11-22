@@ -1,0 +1,43 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: ms-digitalfix-kafka-admin
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/a6a0c27e-18a7-4209-bd1b-32338be5cb66/v2.0
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092,localhost:9093,localhost:9094}
+
+digitalfix:
+  security:
+    audiences:
+      - 8e5e408b-c101-4bc1-a5d3-01f702720462
+      - api://8e5e408b-c101-4bc1-a5d3-01f702720462
+  cors:
+    allowed-origins:
+      - http://localhost:8080
+      - http://localhost:4200
+      - https://44.206.195.117
+
+  kafka:
+    # Timeout de cada llamada al AdminClient. Si el cluster no responde a
+    # tiempo, se traduce a 503 en vez de colgar la peticion HTTP.
+    timeout-ms: 10000
+    # Nadie puede borrar estos topicos desde esta API: son la columna
+    # vertebral de audit y report. Modificar su configuracion (retention,
+    # min.insync.replicas) o ampliar sus particiones si esta permitido.
+    topicos-protegidos:
+      - digitalfix.workorders.events
+      - digitalfix.workorders.events.DLT
+      - digitalfix.audit.events
+      - digitalfix.audit.events.DLT
+
+logging:
+  level:
+    cl.duoc.ms_digitalfix_kafka_admin: INFO
