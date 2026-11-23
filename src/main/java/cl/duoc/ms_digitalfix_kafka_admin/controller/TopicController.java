@@ -29,12 +29,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/kafka/topics")
 public class TopicController {
 
-    private final KafkaAdminService service;
-
     @Autowired
-    public TopicController(KafkaAdminService service) {
-        this.service = service;
-    }
+    private KafkaAdminService service;
 
     @GetMapping
     @PreAuthorize("hasRole('Admin') and hasAuthority('SCOPE_OT.Read')")

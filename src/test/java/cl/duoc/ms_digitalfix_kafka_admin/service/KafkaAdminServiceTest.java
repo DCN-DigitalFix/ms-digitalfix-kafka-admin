@@ -12,6 +12,7 @@ import org.apache.kafka.common.TopicPartitionInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import cl.duoc.ms_digitalfix_kafka_admin.config.KafkaAdminProperties;
 import cl.duoc.ms_digitalfix_kafka_admin.dto.ClusterResponse;
@@ -40,7 +41,9 @@ class KafkaAdminServiceTest {
     void crearClienteYServicio() {
         admin = new MockAdminClient.Builder().numBrokers(3).build();
         KafkaAdminProperties props = new KafkaAdminProperties(10_000, PROTEGIDOS);
-        service = new KafkaAdminService(admin, props);
+        service = new KafkaAdminService();
+        ReflectionTestUtils.setField(service, "admin", admin);
+        ReflectionTestUtils.setField(service, "props", props);
     }
 
     @AfterEach

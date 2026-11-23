@@ -64,14 +64,11 @@ public class KafkaAdminService {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaAdminService.class);
 
-    private final Admin admin;
-    private final KafkaAdminProperties props;
+    @Autowired
+    private Admin admin;
 
     @Autowired
-    public KafkaAdminService(Admin admin, KafkaAdminProperties props) {
-        this.admin = admin;
-        this.props = props;
-    }
+    private KafkaAdminProperties props;
 
     // -----------------------------------------------------------------------
     // Topicos
